@@ -1,0 +1,14 @@
+name: Workflow Suivant
+on:
+  workflow_run:
+    workflows:
+      - Merge PR
+    types:
+      - completed
+
+jobs:
+  send-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Envoyer un message
+        run: echo "Workflow précédent terminé"
