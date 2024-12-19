@@ -1,0 +1,45 @@
+name: CI Pipeline with Matrix
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-matrix:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true # Arrête la matrice dès qu'un job échoue (modifiable)
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [14, 16, 18]
+        include: # Ajoute une combinaison spécifique
+          - os: ubuntu-latest
+            node: 12
+        exclude: # Exclut une combinaison spécifique
+          - os: macos-latest
+            node: 14
+
+    steps:
+      - name: Vérifier le système et la version de Node.js
+        run: |
+          echo "Système d'exploitation : ${{ matrix.os }}"
+          echo "Version de Node.js : ${{ matrix.node }}"
+
+      - name: Configurer Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Installer les dépendances
+        run: npm install
+
+      - name: Exécuter les tests
+        run: npm test
+
+      - name: Nettoyage (exemple facultatif)
+        if: always()
+        run: echo "Nettoyage après le test"
